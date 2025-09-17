@@ -11,7 +11,7 @@ export const auth = betterAuth({
   plugins: [openAPI()],
   database: drizzleAdapter(db, {
     provider: "pg",
-    schema,
+    schema, // the auth schema that better-auth added
   }),
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
