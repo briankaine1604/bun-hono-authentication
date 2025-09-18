@@ -29,9 +29,27 @@ export const auth = betterAuth({
         htmlBody,
       });
     },
+    autoSignInAfterVerification: true,
   },
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      const htmlBody = `
+      <div>
+        <p>Hello ${user.name},</p>
+        <p>Click the link below to reset your password:</p>
+        <a href="${url}">${url}</a>
+      </div>
+    `;
+      await sendEmail({
+        to: user.email,
+        subject: "Reset your password",
+        htmlBody,
+      });
+    },
+    onPasswordReset: async ({ user }, request) => {
+      console.log(`Password reset completed for user: ${user.email}`);
+    },
     requireEmailVerification: true,
   },
   socialProviders: {
@@ -39,5 +57,10 @@ export const auth = betterAuth({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
+  },
+  trustedOrigins: [process.env.FRONTEND_URL!],
+  rateLimit: {
+    window: 60,
+    max: 5,
   },
 });
